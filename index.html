@@ -51,7 +51,7 @@
         var remaining = countDownTarget-now;
         document.getElementById("startTime").innerHTML = new Date(countDownStart).toTimeString();
         document.getElementById("targetTime").innerHTML = new Date(countDownTarget).toTimeString();
-        document.getElementById("distanceTime").innerHTML = remaining+ " s";
+        document.getElementById("distanceTime").innerHTML = (remaining/1000)+ " s";
     }
 
     function starRunning() {
