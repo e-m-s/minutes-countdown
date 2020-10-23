@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minute Countdown</title>
+    <meta charset="utf-8"/>
+    <style type="text/css">
+        .BIG {
+            font-family:'Courier New', Courier, monospace;
+            font-size: 900%;
+            font-weight: bolder;
+            color: brown;
+        }
+    </style>
+</head>
+<script>
+    var countDownStart = 0;
+    var countDownTarget = 0;
+    var countdownIntervalMillis = 100;
+    var statusPanelVisible = false;
+    var secondsVisible = false;
+    var starStatus = 0;
+
+    function switchStatusPanel() {
+        statusPanelVisible = ! statusPanelVisible; 
+        document.getElementById("statusPanel").hidden = ! statusPanelVisible;
+    }
+
+    function switchSeconds() {
+        secondsVisible = ! secondsVisible; 
+        document.getElementById("showSeconds").hidden = ! secondsVisible;
+        document.getElementById("cntMinText").hidden = secondsVisible;
+    }
+
+    function setupCountdown() {
+        var now = new Date().getTime();
+        // Find the distance between now and the count down date
+        var hoursTxt = document.getElementById("setHours").value;
+        var hours = parseInt(hoursTxt);
+        var mins = parseInt(document.getElementById("setMins").value);
+        // Debug only: console.log(hoursTxt+": "+hours+":"+mins);
+        var distance = (hours*60*60 + mins*60)*1000;
+        countDownStart = now;
+        countDownTarget = now + distance;
+        document.getElementById("expired").hidden = true;
+        document.getElementById("countdown").hidden = false;
+        displayStatus();
+    }
+
+    function displayStatus() {
+        var now = new Date().getTime();
+        var remaining = countDownTarget-now;
+        document.getElementById("startTime").innerHTML = new Date(countDownStart).toTimeString();
+        document.getElementById("targetTime").innerHTML = new Date(countDownTarget).toTimeString();
+        document.getElementById("distanceTime").innerHTML = remaining+ " s";
+    }
+
+    function starRunning() {
+        starStatus++;
+        starStatus %= 40;
+        // Debug only: console.log(starStatus);
+        var result;
+        if (starStatus > 30)       result = "-"; 
+        else if (starStatus > 20)  result = "\\";
+        else if (starStatus > 10)  result = "|";
+        else                        result = "/";
+        document.getElementById("star").innerHTML = result;
+    }
+
+    function displayRemaining() {
+        starRunning();
+
+        // Get today's date and time
+        now = new Date().getTime();
+
+        // Find the distance between now and the count down date
+        var distance = 0;
+        if (countDownTarget > 0) distance = countDownTarget - now;
+
+        // Time calculations for days, hours, minutes and seconds
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        // Display the result
+        var showHours = (hours > 0);
+        document.getElementById("showHours").hidden = ! showHours;
+
+        document.getElementById("cntHours").innerHTML = hours;
+        var displayMinutes;
+        if (secondsVisible) displayMinutes = mins;
+        else displayMinutes = mins+1;
+        displayMinutes = displayMinutes.toString();
+        if (showHours) displayMinutes = displayMinutes.padStart(2, "0");
+        document.getElementById("cntMins").innerHTML = displayMinutes;
+        document.getElementById("cntSeconds").innerHTML = seconds.toString().padStart(2, "0");;
+
+        // If the count down is finished, write some text
+        if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("expired").hidden = false;
+            document.getElementById("countdown").hidden = true;
+        }
+        displayStatus();
+    }
+</script>
+<body>
+    <!-- 
+        --  As the base of the code, W3Schools script: https://www.w3schools.com/howto/howto_js_countdown.asp was used. 
+        -->
+    <script>
+        // Update the count down every interval
+        var x = setInterval(function() {
+            displayRemaining();
+        }, countdownIntervalMillis);
+    </script>
+
+    <!-- Display the countdown timer in an element -->
+    <p id="setTimeForm">
+        Set countdown length: 
+            <input type="number" id="setHours" value="0" />
+            :
+            <input type="number" id="setMins" value="5" />
+        <button onclick="setupCountdown()">Start!</button>
+        <button onclick="switchStatusPanel()">Show/hide status panel</button>
+        <button onclick="switchSeconds()">Show/hide seconds</button>
+    </p>
+    <p style="text-align: center">
+        <span hidden id="star">-</span>
+        <span class="BIG">
+        <span id="countdown">
+            <span id="showHours" hidden>
+                <span id="cntHours">0</span>:<!--
+            --></span>
+            <span id="cntMins">0</span> 
+            <span id="cntMinText">min</span>
+            <span id="showSeconds" hidden>
+                : <span id="cntSeconds">05</span>
+            </span>
+        </span>
+        <span id="expired" hidden>EXPIRED!</span>
+    </p>
+    <p id="statusPanel" hidden style="text-align: center;">
+        Start time: <span id="startTime">xxx</span><br />
+         .:. <br />
+        Target time: <span id="targetTime">xxx</span> <br />
+         .:.  <br />
+        Remaining: <span id="distanceTime">xxx</span> <br />
+    </p>
+
+</body>
+</html>
